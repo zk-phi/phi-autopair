@@ -35,18 +35,22 @@
         (open (car (string-to-syntax "(")))
         (paired (car (string-to-syntax "$")))
         (string (car (string-to-syntax "\""))))
-    (dotimes (char 256)                 ; check all ASCII characters
-      (let* ((entry (aref table char))
-             (class (syntax-class entry)))
-        (cond ((eq class paired)
-               (add-to-list 'lst `(,char pair . ,(char-to-string char)))
-               (define-key phi-autopair-mode-map (char-to-string char) 'phi-autopair-command))
-              ((eq class open)
-               (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
-               (define-key phi-autopair-mode-map (char-to-string char) 'phi-autopair-command))
-              ((eq class string)
-               (add-to-list 'lst `(,char string . ,(char-to-string char)))
-               (define-key phi-autopair-mode-map (char-to-string char) 'phi-autopair-command)))))
+    (map-char-table
+     (lambda (char entry)
+       (let ((class (syntax-class entry)))
+         (cond ((eq class paired)
+                (add-to-list 'lst `(,char pair . ,(char-to-string char)))
+                (define-key phi-autopair-mode-map
+                  (char-to-string char) 'phi-autopair-command))
+               ((eq class open)
+                (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
+                (define-key phi-autopair-mode-map
+                  (char-to-string char) 'phi-autopair-command))
+               ((eq class string)
+                (add-to-list 'lst `(,char string . ,(char-to-string char)))
+                (define-key phi-autopair-mode-map
+                  (char-to-string char) 'phi-autopair-command)))))
+     (syntax-table))
     (setq phi-autopair--pairs lst)))
 
 ;; + minor-mode
