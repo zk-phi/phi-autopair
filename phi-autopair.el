@@ -1,7 +1,5 @@
 (if (not (locate-library "paredit"))
     (error "Cannot open load file: paredit.el")
-  (autoload 'paredit-backward-delete "paredit")
-  (autoload 'paredit-forward-delete "paredit")
   (autoload 'paredit-splice-sexp-killing-backward "paredit")
   (autoload 'paredit-splice-sexp-killing-forward "paredit"))
 
@@ -69,6 +67,25 @@
   phi-autopair-mode
   (lambda () (phi-autopair-mode 1)))
 
+;; + utility functions
+
+(defun phi-autopair--syntax-info ()
+  "return (IN-STRING IN-COMMENT)"
+  (if (and (boundp 'font-lock-mode) font-lock-mode)
+      (let ((face (get-text-property (point) 'face)))
+        (list (eq face 'font-lock-string-face)
+              (member face '(font-lock-comment-face
+                             font-lock-comment-delimiter-face))))
+    (let ((syntax-ppss (syntax-ppss)))
+      (list (nth 3 syntax-ppss)
+            (nth 4 syntax-ppss)))))
+
+(defun phi-autopair--in-string-p ()
+  (car (phi-autopair--syntax-info)))
+
+(defun phi-autopair--in-comment-p ()
+  (cadr (phi-autopair--syntax-info)))
+
 ;; + insert command
 
 (defun phi-autopair-command ()
@@ -80,7 +97,7 @@
         (insert open)
       (let ((type (car pair)) (close (cdr pair)))
         ;; escape string delimiters in string
-        (when (and (nth 3 (syntax-ppss)) (eq type 'string))
+        (when (and (phi-autopair--in-string-p) (eq type 'string))
           (setq open (concat "\\" open)
                 close (concat "\\" close)))
         (if (use-region-p)
@@ -93,7 +110,7 @@
               (goto-char beg)
               (insert open))
           ;; add spaces around parens in lispy-mode(s)
-          (when (and (not (nth 3 (syntax-ppss)))
+          (when (and (not (phi-autopair--in-string-p))
                      (member major-mode phi-autopair-lispy-modes))
             (setq open (concat
                         (unless (looking-back "[\s\t\n]\\|\\s(\\|^\\|\\s'") " ")
@@ -109,11 +126,10 @@
 
 (defun phi-autopair-delete-backward (&optional strict)
   (interactive)
-  (let ((syntax-ppss (syntax-ppss)))
-    (cond ((or (and (not (nth 3 syntax-ppss))
-                    (not (nth 4 syntax-ppss))
+  (let ((syntax (phi-autopair--syntax-info)))
+    (cond ((or (and (not (eval `(or ,@syntax)))
                     (looking-back "\\([^\\]\\|^\\)\\s("))
-               (and (nth 3 syntax-ppss)
+               (and (car syntax)
                     (looking-back "\\([^\\]\\|^\\)\\s\"")))
            (condition-case err
                (paredit-splice-sexp-killing-backward)
@@ -123,19 +139,19 @@
            (delete-region
             (point)
             (progn (skip-chars-backward "\s\t") (point))))
-          (strict
-           (paredit-backward-delete))
+          ((or (not strict)
+               (not (looking-back "\\s)\\|\\s\"")))
+           (delete-char -1))
           (t
-           (delete-char -1)))))
+           (backward-char 1)))))
 
 (defun phi-autopair-delete-forward (&optional strict)
   (interactive)
-  (let ((syntax-ppss (syntax-ppss)))
+  (let ((syntax (phi-autopair--syntax-info)))
     (cond ((and (not (looking-back "[\\]"))
-                (or (and (not (nth 3 syntax-ppss))
-                         (not (nth 4 syntax-ppss))
+                (or (and (not (eval `(or ,@syntax)))
                          (looking-at "\\s)"))
-                    (and (nth 3 syntax-ppss)
+                    (and (car syntax)
                          (looking-at "\\s\""))))
            (condition-case err
                (paredit-splice-sexp-killing-forward)
@@ -145,10 +161,11 @@
            (delete-region
             (point)
             (progn (skip-chars-forward "\s\t\n") (point))))
-          (strict
-           (paredit-forward-delete))
+          ((or (not strict)
+               (not (looking-at "\\s(\\|\\s\"")))
+           (delete-char 1))
           (t
-           (delete-char 1)))))
+           (forward-char 1)))))
 
 (defun phi-autopair-delete-backward-word ()
   (interactive)
