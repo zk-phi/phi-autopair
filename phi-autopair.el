@@ -70,21 +70,21 @@
 ;; + utility functions
 
 (defun phi-autopair--syntax-info ()
-  "return (IN-STRING IN-COMMENT)"
+  "return (IN-STRING . IN-COMMENT)"
   (if (and (boundp 'font-lock-mode) font-lock-mode)
       (let ((face (get-text-property (point) 'face)))
-        (list (eq face 'font-lock-string-face)
+        (cons (eq face 'font-lock-string-face)
               (member face '(font-lock-comment-face
                              font-lock-comment-delimiter-face))))
     (let ((syntax-ppss (syntax-ppss)))
-      (list (nth 3 syntax-ppss)
+      (cons (nth 3 syntax-ppss)
             (nth 4 syntax-ppss)))))
 
 (defun phi-autopair--in-string-p ()
   (car (phi-autopair--syntax-info)))
 
 (defun phi-autopair--in-comment-p ()
-  (cadr (phi-autopair--syntax-info)))
+  (cdr (phi-autopair--syntax-info)))
 
 ;; + insert command
 
