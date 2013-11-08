@@ -1,7 +1,7 @@
 (if (not (locate-library "paredit"))
     (error "Cannot open load file: paredit.el")
-  (autoload 'paredit-splice-sexp-killing-backward "paredit")
-  (autoload 'paredit-splice-sexp-killing-forward "paredit"))
+  (declare-function paredit-splice-sexp-killing-forward "paredit")
+  (declare-function paredit-splice-sexp-killing-backward "paredit"))
 
 ;; + customs
 
