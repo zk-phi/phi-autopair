@@ -73,7 +73,8 @@
   "return (IN-STRING . IN-COMMENT)"
   (if (and (boundp 'font-lock-mode) font-lock-mode)
       (let ((face (get-text-property (point) 'face)))
-        (cons (eq face 'font-lock-string-face)
+        (cons (member face '(font-lock-string-face
+                             font-lock-doc-face))
               (member face '(font-lock-comment-face
                              font-lock-comment-delimiter-face))))
     (let ((syntax-ppss (syntax-ppss)))
