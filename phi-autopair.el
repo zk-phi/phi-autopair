@@ -39,15 +39,15 @@
          (cond ((eq class paired)
                 (add-to-list 'lst `(,char pair . ,(char-to-string char)))
                 (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-command))
+                  (char-to-string char) 'phi-autopair-open))
                ((eq class open)
                 (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
                 (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-command))
+                  (char-to-string char) 'phi-autopair-open))
                ((eq class string)
                 (add-to-list 'lst `(,char string . ,(char-to-string char)))
                 (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-command)))))
+                  (char-to-string char) 'phi-autopair-open)))))
      (syntax-table))
     (setq phi-autopair--pairs lst)))
 
@@ -89,7 +89,7 @@
 
 ;; + insert command
 
-(defun phi-autopair-command ()
+(defun phi-autopair-open ()
   (interactive)
   (let* ((open (char-to-string last-command-event))
          (pair (cdr (assoc last-command-event phi-autopair--pairs))))
