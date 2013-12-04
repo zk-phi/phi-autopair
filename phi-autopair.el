@@ -6,7 +6,7 @@
 ;; + customs
 
 (defvar phi-autopair-lispy-modes
-  '(lisp-mode emacs-lisp-mode
+  '(lisp-mode emacs-lisp-mode gauche-mode
               scheme-mode lisp-interaction-mode))
 
 (defvar phi-autopair-delete-hungry t)
