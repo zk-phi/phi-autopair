@@ -1,7 +1,14 @@
 (if (not (locate-library "paredit"))
     (error "Cannot open load file: paredit.el")
-  (declare-function paredit-splice-sexp-killing-forward "paredit")
-  (declare-function paredit-splice-sexp-killing-backward "paredit"))
+  (autoload 'paredit-splice-sexp-killing-forward "paredit")
+  (autoload 'paredit-splice-sexp-killing-backward "paredit"))
+
+(eval-after-load "delsel"
+  '(dolist (symbol '(phi-autopair-delete-backward
+                     phi-autopair-delete-forward
+                     phi-autopair-delete-backward-word
+                     phi-autopair-delete-forward-word))
+     (put symbol 'delete-selection t)))
 
 ;; + customs
 
@@ -183,13 +190,6 @@
            (phi-autopair-delete-forward 'strict)
            (not (looking-at ".\\>"))))
   (delete-char 1))
-
-(eval-after-load "delsel"
-  '(dolist (symbol '(phi-autopair-delete-backward
-                     phi-autopair-delete-forward
-                     phi-autopair-delete-backward-word
-                     phi-autopair-delete-forward-word))
-     (put symbol 'delete-selection t)))
 
 ;; + provide
 
