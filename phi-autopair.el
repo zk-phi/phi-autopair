@@ -33,22 +33,24 @@
         (open (car (string-to-syntax "(")))
         (paired (car (string-to-syntax "$")))
         (string (car (string-to-syntax "\""))))
-    (map-char-table
-     (lambda (char entry)
-       (let ((class (syntax-class entry)))
-         (cond ((eq class paired)
-                (add-to-list 'lst `(,char pair . ,(char-to-string char)))
-                (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-open))
-               ((eq class open)
-                (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
-                (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-open))
-               ((eq class string)
-                (add-to-list 'lst `(,char string . ,(char-to-string char)))
-                (define-key phi-autopair-mode-map
-                  (char-to-string char) 'phi-autopair-open)))))
-     (syntax-table))
+    (while table
+      (map-char-table
+       (lambda (char entry)
+         (let ((class (syntax-class entry)))
+           (cond ((eq class paired)
+                  (add-to-list 'lst `(,char pair . ,(char-to-string char)))
+                  (define-key phi-autopair-mode-map
+                    (char-to-string char) 'phi-autopair-open))
+                 ((eq class open)
+                  (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
+                  (define-key phi-autopair-mode-map
+                    (char-to-string char) 'phi-autopair-open))
+                 ((eq class string)
+                  (add-to-list 'lst `(,char string . ,(char-to-string char)))
+                  (define-key phi-autopair-mode-map
+                    (char-to-string char) 'phi-autopair-open)))))
+       table)
+      (setq table (char-table-parent table)))
     (setq phi-autopair--pairs lst)))
 
 ;; + minor-mode
