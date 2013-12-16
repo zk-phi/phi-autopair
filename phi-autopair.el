@@ -90,6 +90,12 @@
       (cons (nth 3 syntax-ppss)
             (nth 4 syntax-ppss)))))
 
+(defun phi-autopair--string-quot-char ()
+  (save-excursion
+    (while (and (not (zerop (skip-syntax-forward "^\"")))
+                (looking-back "\s\"")))
+    (unless (eobp) (char-after))))
+
 (defun phi-autopair--in-string-p ()
   (car (phi-autopair--syntax-info)))
 
@@ -107,7 +113,9 @@
         (insert open)
       (let ((type (car pair)) (close (cdr pair)))
         ;; escape string delimiters in string
-        (when (and (phi-autopair--in-string-p) (eq type 'string))
+        (when (and (eq type 'string)
+                   (phi-autopair--in-string-p)
+                   (= (phi-autopair--string-quot-char) (string-to-char open)))
           (setq open (concat "\\" open)
                 close (concat "\\" close)))
         (if (use-region-p)
@@ -119,7 +127,7 @@
               (insert close)
               (goto-char beg)
               (insert open))
-          ;; add spaces around parens in lispy-mode(s)
+          ;; insert
           (when (and (not (phi-autopair--in-string-p))
                      (member major-mode phi-autopair-lispy-modes))
             (setq open (concat
@@ -128,7 +136,6 @@
                   close (concat
                          close
                          (unless (looking-at "[\s\t\n]\\|\\s)\\|$") " "))))
-          ;; insert
           (insert open)
           (save-excursion (insert close)))))))
 
