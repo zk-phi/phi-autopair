@@ -17,6 +17,7 @@
               scheme-mode lisp-interaction-mode))
 
 (defvar phi-autopair-delete-hungry t)
+(defvar phi-autopair-close-cautious t)
 
 ;; + internal vars
 
@@ -51,7 +52,9 @@
                  ((eq class open)
                   (add-to-list 'lst `(,char pair . ,(char-to-string (cdr entry))))
                   (define-key phi-autopair-mode-map
-                    (char-to-string char) 'phi-autopair-open))
+                    (char-to-string char) 'phi-autopair-open)
+                  (define-key phi-autopair-mode-map
+                    (char-to-string (cdr entry)) 'phi-autopair-close))
                  ((eq class string)
                   (add-to-list 'lst `(,char string . ,(char-to-string char)))
                   (define-key phi-autopair-mode-map
@@ -138,6 +141,15 @@
                          (unless (looking-at "[\s\t\n]\\|\\s)\\|$") " "))))
           (insert open)
           (save-excursion (insert close)))))))
+
+(defun phi-autopair-close ()
+  (interactive)
+  (let ((close (char-to-string last-command-event)))
+    (if (or (not phi-autopair-close-cautious)
+            (looking-back "\\s\\")
+            (eq last-command this-command))
+        (insert close)
+      (message "Press again to insert closing."))))
 
 ;; + delete commands
 
