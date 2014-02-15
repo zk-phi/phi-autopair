@@ -1,0 +1,92 @@
+* phi-autopair.el
+
+another straight-forward autopair implementation (insert/delete parens
+automatically).
+
+括弧の自動挿入・削除
+
+** Features
+
+- Automatically insert close parens
+
+  [[screencasts/paren.gif]]
+
+  A close paren is automatically inserted on insertion of an open
+  paren. When an open paren is inserted with the mark is active, the
+  region is wrapped with parens. String quotes are escaped if
+  necessary.
+
+- Automatically insert whitespaces in LISP-like languages
+
+  [[screencasts/whitespace.gif]]
+
+  In LISP-like languages, whitespaces are inserted in addition.
+
+- Smart delete commands powered by "paredit.el"
+
+  [[screencasts/deletion.gif]]
+
+  + deleting paren from inside also deletes the partner paren, even
+    when some contents are between them
+
+  + deleting paren from outside does not deletes the partner paren, so
+    that you can restore the balance manually
+
+  + both escape character and the escaped character are deleted at a
+    time
+
+  + all adjacent whitespaces are deleted at a time (hungry-deletion)
+
+  Still you can disable some of them.
+
+** Other Advantages
+
+- Better compatibility with other plug-ins (multiple-cursors, for
+  example)
+
+  Many plug-ins use post/pre-command-hook to modify existing commands'
+  behaviors. The hook is useful, but plug-ins heavily depend on the
+  hook sometimes cause some conflictions with other plug-ins in the
+  hook.
+
+  This plug-in just defines few new commands: insert commands and
+  delete commands, and binds some keys to the commands. Thus not
+  depends on the hook, and has better compatibility with other
+  plug-ins.
+
+- Works with all languages without any settings
+
+  Settings are automatically generated from the syntax-table, thus it
+  works without any settings as long as the major-mode is implemented
+  correctly.
+
+- Supports non-ASCII parens (like «»)
+
+** Disadvantages
+
+- Overrides keybinds for some keys
+
+  Instead of using hooks to modify existing commands, this plug-in
+  defines new commands and binds some keys to them.
+
+- Cannot handle multi-char parens (like "begin" and "end")
+
+  This plug-in uses syntax-table provided by the major-mode to
+  recognize parens, thus cannot handle multi-char parens. If you need
+  multi-char parens support, you may try "smartparens.el".
+
+- depends on "paredit.el"
+
+  You need to download it before loading this plug-in.
+
+** Usage
+
+Require this script
+
+: (require 'phi-autopair)
+
+and call function =phi-autopair-mode=. If you want enable
+=phi-autopair-mode= (almost) everywhere, call
+=phi-autopair-global-mode= instead.
+
+: (phi-autopair-global-mode)
