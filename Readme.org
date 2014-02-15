@@ -12,7 +12,7 @@ automatically).
   [[screencasts/paren.gif]]
 
   A close paren is automatically inserted on insertion of an open
-  paren. When an open paren is inserted with the mark is active, the
+  paren. When an open paren is inserted with the mark active, the
   region is wrapped with parens. String quotes are escaped if
   necessary.
 
@@ -75,18 +75,32 @@ automatically).
   recognize parens, thus cannot handle multi-char parens. If you need
   multi-char parens support, you may try "smartparens.el".
 
-- depends on "paredit.el"
+- Depends on "paredit.el"
 
   You need to download it before loading this plug-in.
 
 ** Usage
 
-Require this script
+Put phi-autopair.el *and paredit.el*
+([[http://www.emacswiki.org/emacs/ParEdit]]) in a "load-path"ed directory,
+and require this script.
 
 : (require 'phi-autopair)
 
-and call function =phi-autopair-mode=. If you want enable
-=phi-autopair-mode= (almost) everywhere, call
-=phi-autopair-global-mode= instead.
+To enable phi-autopair in the current buffer, call command
+=phi-autopair-mode=. If you want to enable =phi-autopair-mode=
+(almost) everywhere, call =phi-autopair-global-mode= instead.
 
 : (phi-autopair-global-mode)
+
+** Customizable variables
+
+- phi-autopair-lispy-modes
+- phi-autopair-auto-insert-pairs
+- phi-autopair-auto-wrap-region
+- phi-autopair-auto-delete-pairs
+- phi-autopair-auto-delete-spaces
+- phi-autopair-auto-delete-escape
+- phi-autopair-cautious-close
+- phi-autopair-cautious-delete
+- phi-autopair-mode-map

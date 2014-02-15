@@ -1,22 +1,48 @@
-;; advantages
-;; - does not use pre/post-command-hook nor after/before-change-functions
-;; - works with all languages without any settings
-;;   - settings are automatically generated from the syntax-table, thus
-;;     it works without any settings as long as the major-mode is
-;;     implemented correctly
-;; - smart deletion powered by "paredit.el"
-;;   - (features below are all disableable)
-;;   - deleting parens also deletes the partner parens
-;;   - both escape character and the escaped character are deleted at a time
-;;   - all adjacent whitespaces are deleted at a time
-;; - simple. does nothing more than paren insertion, region wrapping, and
-;;   smart deletion described above
+;;; phi-autopair.el --- another simple-minded autopair implementation
 
-;; dis-advantages
-;; - reserves keybinds for parens ("(", ")", "[", and so on)
-;;   - you cannot bind these keys to any commands
-;; - cannot handle multi-char parens like "begin" and "end" unlike
-;;   "smartparens.el"
+;; Copyright (C) 2013 zk_phi
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, write to the Free Software
+;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+;; Author: zk_phi
+;; URL: http://hins11.yu-yake.com/
+;; Version: 1.0.0
+
+;;; Commentary:
+
+;; This script provides a minor-mode phi-autopair-mode, that
+;; inserts/deletes parens automatically.
+;;
+;; Put this script and "paredit.el" in a "load-path"ed direcctory,
+;; and then
+;;
+;;   (require 'phi-autopair)
+;;
+;; You can enable phi-autopair-mode locally by calling command
+;; "phi-autopair-mode", or globally by calling
+;; "phi-autopair-global-mode" instead.
+;;
+;;   (phi-autopair-global-mode)
+;;
+;; See Readme.org for more informations.
+
+;;; Change Log:
+
+;; 1.0.0 first release
+
+;;; Code:
 
 (defconst phi-autopair-version "1.0.0")
 
@@ -85,8 +111,6 @@ whitespaces at a time."
     map)
   "keymap for phi-autopair-mode buffers"
   :group 'phi-autopair)
-
-;; (defvar phi-autopair-auto-delete-escape t) ; not implemented
 
 ;; + internal vars
 
