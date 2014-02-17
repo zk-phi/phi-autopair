@@ -378,3 +378,5 @@ string is started."
 ;; + provide
 
 (provide 'phi-autopair)
+
+;;; phi-autopair.el ends here

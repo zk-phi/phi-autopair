@@ -1,6 +1,6 @@
 * phi-autopair.el
 
-another straight-forward autopair implementation (insert/delete parens
+another simple-minded autopair implementation (insert/delete parens
 automatically).
 
 括弧の自動挿入・削除
