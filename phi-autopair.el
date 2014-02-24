@@ -19,6 +19,7 @@
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
 ;; Version: 1.0.0
+;; Package-Requires: ((paredit "20"))
 
 ;;; Commentary:
 
