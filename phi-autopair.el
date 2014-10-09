@@ -171,11 +171,17 @@ whitespaces at a time."
 (defun phi-autopair--syntax-info ()
   "return (IN-STRING . IN-COMMENT)"
   (if (and (boundp 'font-lock-mode) font-lock-mode)
-      (let ((face (get-text-property (point) 'face)))
-        (cons (memq face '(font-lock-string-face
-                           font-lock-doc-face))
-              (memq face '(font-lock-comment-face
-                           font-lock-comment-delimiter-face))))
+      (let ((prev-face (when (> (point) 1)
+                         (get-text-property (1- (point)) 'face)))
+            (face (get-text-property (point) 'face)))
+        (cons (and (memq face '(font-lock-string-face
+                                font-lock-doc-face))
+                   (memq prev-face '(font-lock-string-face
+                                     font-lock-doc-face)))
+              (and (memq face '(font-lock-comment-face
+                                font-lock-comment-delimiter-face))
+                   (memq prev-face '(font-lock-comment-face
+                                     font-lock-comment-delimiter-face)))))
     (let ((syntax-ppss (syntax-ppss)))
       (cons (nth 3 syntax-ppss)
             (nth 4 syntax-ppss)))))
