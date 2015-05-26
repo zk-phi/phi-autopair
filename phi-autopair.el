@@ -1,6 +1,6 @@
 ;;; phi-autopair.el --- another simple-minded autopair implementation
 
-;; Copyright (C) 2013 zk_phi
+;; Copyright (C) 2013-2015 zk_phi
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -136,12 +136,13 @@ whitespaces at a time."
                   (define-key phi-autopair-mode-map
                     (char-to-string char) 'phi-autopair-open))
                  ((eq class open)
-                  (add-to-list 'phi-autopair--pairs
-                               `(,char pair . ,(char-to-string (cdr entry))))
-                  (define-key phi-autopair-mode-map
-                    (char-to-string char) 'phi-autopair-open)
-                  (define-key phi-autopair-mode-map
-                    (char-to-string (cdr entry)) 'phi-autopair-close))
+                  (when (cdr entry)
+                    (add-to-list 'phi-autopair--pairs
+                                 `(,char pair . ,(char-to-string (cdr entry))))
+                    (define-key phi-autopair-mode-map
+                      (char-to-string char) 'phi-autopair-open)
+                    (define-key phi-autopair-mode-map
+                      (char-to-string (cdr entry)) 'phi-autopair-close)))
                  ((eq class string)
                   (add-to-list 'phi-autopair--pairs
                                `(,char string . ,(char-to-string char)))
