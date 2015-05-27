@@ -63,8 +63,9 @@
   :group 'emacs)
 
 (defcustom phi-autopair-lispy-modes
-  '(lisp-mode emacs-lisp-mode gauche-mode
-              scheme-mode lisp-interaction-mode)
+  '(lisp-mode emacs-lisp-mode lisp-interaction-mode
+              scheme-mode gauche-mode racket-mode
+              clojure-mode egison-mode)
   "list of major-modes for lisp-like languages"
   :group 'phi-autopair)
 
