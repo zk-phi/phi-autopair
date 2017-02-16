@@ -254,16 +254,18 @@ string is started."
   "FOR INTERNAL USE. delete maybe one character backward."
   (let* ((syntax (phi-autopair--syntax-info))
          (in-string (car syntax))
+         (last-char (char-before))
+         (last-syntax-class (and last-char (car (aref (syntax-table) last-char))))
          (not-in-comment (not (cdr syntax)))
          (escaped (and (save-excursion
                          (backward-char 1)
                          (phi-autopair--escaped-p))))
          (escaped-middle (and (not escaped)
-                              (looking-back "\\s\\")
+                              (eq last-syntax-class 9) ; (string-to-syntax "\\")
                               ;; without this, delete-backward will
                               ;; delete newline when an escape char at
                               ;; EOL is deleted backward.
-                              (not (looking-at "\n")))))
+                              (not (eql (char-after) ?\n)))))
     (cond ((and phi-autopair-auto-delete-escape
                 escaped
                 not-in-comment)
@@ -275,21 +277,19 @@ string is started."
            (delete-char 1))
           ((and phi-autopair-auto-delete-pairs
                 (not escaped)
-                (or (and not-in-comment
-                         (not in-string)
-                         (looking-back "\\s("))
-                    (and in-string
-                         (looking-back "\\s\""))))
-           (condition-case err
-               (paredit-splice-sexp-killing-backward)
-             (error (unless strict (backward-delete-char 1)))))
+                (or (and (eq last-syntax-class 4) ; (string-to-syntax "(")
+                         not-in-comment
+                         (not in-string))
+                    (and (eq last-syntax-class 7) ; (string-to-syntax "\"")
+                         in-string)))
+           (paredit-splice-sexp-killing-backward))
           ((and phi-autopair-auto-delete-spaces
-                (looking-back "[\s\t]"))
+                (memq last-char '(?\s ?\t)))
            (delete-region
             (point)
             (progn (skip-chars-backward "\s\t") (point))))
           ((or (not strict)
-               (not (looking-back "\\s)\\|\\s(\\|\\s\"")))
+               (not (memq last-syntax-class '(4 5 7)))) ; (string-to-syntax ")")
            (delete-char -1))
           (t
            (backward-char 1)))))
@@ -298,10 +298,11 @@ string is started."
   "FOR INTERNAL USE. delete maybe one character forward."
   (let* ((syntax (phi-autopair--syntax-info))
          (in-string (car syntax))
+         (next-char (char-after))
+         (next-syntax-class (and next-char (car (aref (syntax-table) next-char))))
          (not-in-comment (not (cdr syntax)))
          (escaped (phi-autopair--escaped-p))
-         (escaped-forward (and (not escaped)
-                               (looking-at "\\s\\"))))
+         (escaped-forward (and (not escaped) (eq next-syntax-class 9))))
     (cond ((and phi-autopair-auto-delete-escape
                 escaped
                 not-in-comment)
@@ -313,21 +314,19 @@ string is started."
            (delete-char 2))
           ((and phi-autopair-auto-delete-pairs
                 (not escaped)
-                (or (and not-in-comment
-                         (not in-string)
-                         (looking-at "\\s)"))
-                    (and in-string
-                         (looking-at "\\s\""))))
-           (condition-case err
-               (paredit-splice-sexp-killing-forward)
-             (error (unless strict (delete-char 1)))))
+                (or (and (eq next-syntax-class 5)
+                         not-in-comment
+                         (not in-string))
+                    (and (eq next-syntax-class 7)
+                         in-string)))
+           (paredit-splice-sexp-killing-forward))
           ((and phi-autopair-auto-delete-spaces
-                (looking-at "[\s\t\n]"))
+                (memq next-char '(?\s ?\t ?\n)))
            (delete-region
             (point)
             (progn (skip-chars-forward "\s\t\n") (point))))
           ((or (not strict)
-               (not (looking-at "\\s)\\|\\s(\\|\\s\"")))
+               (not (memq next-syntax-class '(4 5 7))))
            (delete-char 1))
           (t
            (forward-char 1)))))
@@ -350,21 +349,17 @@ string is started."
   (interactive "p")
   (if (< n 0)
       (phi-autopair-delete-forward-word (- n))
-    (dotimes (_ (or n 1))
-      (while (progn
-               (phi-autopair--delete-backward 'strict)
-               (not (looking-back "\\<."))))
-      (delete-char -1))))
+    (let ((end (save-excursion (backward-word n) (point-marker))))
+      (while (< end (point))
+        (phi-autopair--delete-backward 'strict)))))
 
 (defun phi-autopair-delete-forward-word (&optional n)
   (interactive "p")
   (if (< n 0)
       (phi-autopair-delete-backward-word (- n))
-    (dotimes (_ (or n 1))
-      (while (progn
-               (phi-autopair--delete-forward 'strict)
-               (not (looking-at ".\\>"))))
-      (delete-char 1))))
+    (let ((end (save-excursion (forward-word n) (point-marker))))
+      (while (< (point) end)
+        (phi-autopair--delete-forward 'strict)))))
 
 ;; + workarounds
 
