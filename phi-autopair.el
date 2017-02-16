@@ -208,7 +208,7 @@ string is started."
   (let ((open (char-to-string last-command-event)) pair)
     (if (or (not phi-autopair-auto-insert-pairs) ; not desired
             (phi-autopair--escaped-p)            ; escaped
-            (null                                ; partner is not found
+            (null                                ; not a open paren in this mode
              (setq pair (cdr (assoc last-command-event phi-autopair--pairs)))))
         (insert open)
       (let ((type (car pair)) (close (cdr pair)))
