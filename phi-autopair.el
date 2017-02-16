@@ -45,16 +45,9 @@
 
 ;;; Code:
 
+(require 'paredit)
+
 (defconst phi-autopair-version "1.0.0")
-
-;; + dependencies
-
-;; do not load but just locate "paredit.el" so that we can load
-;; "paredit" lazily.
-(if (not (locate-library "paredit"))
-    (error "Cannot open load file: paredit.el")
-  (autoload 'paredit-splice-sexp-killing-forward "paredit")
-  (autoload 'paredit-splice-sexp-killing-backward "paredit"))
 
 ;; + customs
 
