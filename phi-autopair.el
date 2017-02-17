@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((paredit "20"))
 
 ;;; Commentary:
@@ -42,12 +42,13 @@
 ;;; Change Log:
 
 ;; 1.0.0 first release
+;; 1.0.1 performace improvement
 
 ;;; Code:
 
 (require 'paredit)
 
-(defconst phi-autopair-version "1.0.0")
+(defconst phi-autopair-version "1.0.1")
 
 ;; + customs
 
