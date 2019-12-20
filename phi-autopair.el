@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 1.0.1
+;; Version: 1.1.0
 ;; Package-Requires: ((paredit "20"))
 
 ;;; Commentary:
@@ -43,12 +43,13 @@
 
 ;; 1.0.0 first release
 ;; 1.0.1 performace improvement
+;; 1.1.0 add variable `phi-autopair-indent-offset-alist'
 
 ;;; Code:
 
 (require 'paredit)
 
-(defconst phi-autopair-version "1.0.1")
+(defconst phi-autopair-version "1.1.0")
 
 ;; + customs
 
@@ -93,6 +94,13 @@ whitespaces at a time."
 
 (defcustom phi-autopair-cautious-delete nil
   "when non-nil, deletion commands never delete parens by one."
+  :group 'phi-autopair)
+
+(defcustom phi-autopair-indent-offset-alist nil
+  "alist of the form ((MAJOR-MODE . INTEGER) ...). if the current
+major mode is listed in, phi-autopair tries to stop at the indent
+units when killing bunch of whitespaces. This may useful for
+indent-based languages."
   :group 'phi-autopair)
 
 (defcustom phi-autopair-mode-map
@@ -266,7 +274,9 @@ string is started."
                               ;; without this, delete-backward will
                               ;; delete newline when an escape char at
                               ;; EOL is deleted backward.
-                              (not (eql (char-after) ?\n)))))
+                              (not (eql (char-after) ?\n))))
+         (indent-unit (and phi-autopair-auto-delete-spaces
+                           (assoc-default major-mode phi-autopair-indent-offset-alist nil nil))))
     (cond ((and phi-autopair-auto-delete-escape
                 escaped
                 not-in-comment)
@@ -284,6 +294,13 @@ string is started."
                     (and (eq last-syntax-class 7) ; (string-to-syntax "\"")
                          in-string)))
            (paredit-splice-sexp-killing-backward))
+          ((and phi-autopair-auto-delete-spaces
+                indent-unit
+                (looking-at "[^\s]\\|$")
+                (looking-back "^\s+"))
+           (delete-region
+            (point)
+            (- (point) (+ indent-unit (mod (- (point) (match-beginning 0)) indent-unit)))))
           ((and phi-autopair-auto-delete-spaces
                 (memq last-char '(?\s ?\t)))
            (delete-region
