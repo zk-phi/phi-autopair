@@ -62,38 +62,46 @@
               scheme-mode gauche-mode racket-mode
               clojure-mode egison-mode)
   "list of major-modes for lisp-like languages"
+  :type '(list symbol)
   :group 'phi-autopair)
 
 (defcustom phi-autopair-auto-insert-pairs t
   "when non-nil, \"(\" also inserts \")\"."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-auto-wrap-region t
   "when non-nil, the region is wrapped with \"(\", if the mark is
   active."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-auto-delete-pairs t
   "when non-nil, deleting paren from inside also deletes the
   partner paren."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-auto-delete-spaces t
   "when non-nil, deletion commands deletes all adjacent
 whitespaces at a time."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-auto-delete-escape t
   "when non-nil, deletion commands deletes both escape character
   and escaped character at a time."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-cautious-close t
   "when non-nil, \")\" does not inserts \")\" but \"))\" does."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-cautious-delete nil
   "when non-nil, deletion commands never delete parens by one."
+  :type 'boolean
   :group 'phi-autopair)
 
 (defcustom phi-autopair-indent-offset-alist nil
@@ -101,6 +109,7 @@ whitespaces at a time."
 major mode is listed in, phi-autopair tries to stop at the indent
 units when killing bunch of whitespaces. This may useful for
 indent-based languages."
+  :type '(alist :key-type symbol :value-type integer)
   :group 'phi-autopair)
 
 (defcustom phi-autopair-mode-map
@@ -114,6 +123,7 @@ indent-based languages."
     (define-key map [remap kill-word] 'phi-autopair-delete-forward-word)
     map)
   "keymap for phi-autopair-mode buffers"
+  :type 'keymap
   :group 'phi-autopair)
 
 ;; + internal vars
