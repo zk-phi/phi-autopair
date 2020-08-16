@@ -216,7 +216,7 @@ indent-based languages."
 string is started."
   (save-excursion
     (while (and (not (zerop (skip-syntax-forward "^\"")))
-                (looking-back "\s\"")))
+                (looking-back "\s\"" (max 1 (1- (point))))))
     (unless (eobp) (char-after))))
 
 ;; + insert command
@@ -249,7 +249,7 @@ string is started."
           (when (and (not (phi-autopair--in-string-p))
                      (member major-mode phi-autopair-lispy-modes))
             (setq open (concat
-                        (unless (looking-back "[\s\t\n]\\|\\s(\\|^\\|\\s'") " ")
+                        (unless (looking-back "[\s\t\n]\\|\\s(\\|^\\|\\s'" (point-min)) " ")
                         open)
                   close (concat
                          close
@@ -307,7 +307,7 @@ string is started."
           ((and phi-autopair-auto-delete-spaces
                 indent-unit
                 (looking-at "[^\s]\\|$")
-                (looking-back "^\s+"))
+                (looking-back "^\s+" (point-at-bol)))
            (delete-region
             (point)
             (- (point) (+ indent-unit (mod (- (point) (match-beginning 0)) indent-unit)))))
