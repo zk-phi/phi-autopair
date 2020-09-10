@@ -135,34 +135,31 @@ indent-based languages."
 (defun phi-autopair--setup ()
   "setup keybinds and phi-autopair--pairs from the syntax-table"
   (setq phi-autopair--pairs nil)
-  (let ((table (syntax-table))
-        (open (car (string-to-syntax "(")))
+  (let ((open (car (string-to-syntax "(")))
         (paired (car (string-to-syntax "$")))
         (string (car (string-to-syntax "\""))))
-    (while table
-      (map-char-table
-       (lambda (char entry)
-         (let ((class (syntax-class entry)))
-           (cond ((eq class paired)
+    (map-char-table
+     (lambda (char entry)
+       (let ((class (syntax-class entry)))
+         (cond ((eq class paired)
+                (add-to-list 'phi-autopair--pairs
+                             `(,char pair . ,(char-to-string char)))
+                (define-key phi-autopair-mode-map
+                  (char-to-string char) 'phi-autopair-open))
+               ((eq class open)
+                (when (cdr entry)
                   (add-to-list 'phi-autopair--pairs
-                               `(,char pair . ,(char-to-string char)))
+                               `(,char pair . ,(char-to-string (cdr entry))))
                   (define-key phi-autopair-mode-map
-                    (char-to-string char) 'phi-autopair-open))
-                 ((eq class open)
-                  (when (cdr entry)
-                    (add-to-list 'phi-autopair--pairs
-                                 `(,char pair . ,(char-to-string (cdr entry))))
-                    (define-key phi-autopair-mode-map
-                      (char-to-string char) 'phi-autopair-open)
-                    (define-key phi-autopair-mode-map
-                      (char-to-string (cdr entry)) 'phi-autopair-close)))
-                 ((eq class string)
-                  (add-to-list 'phi-autopair--pairs
-                               `(,char string . ,(char-to-string char)))
+                    (char-to-string char) 'phi-autopair-open)
                   (define-key phi-autopair-mode-map
-                    (char-to-string char) 'phi-autopair-open)))))
-       table)
-      (setq table (char-table-parent table)))))
+                    (char-to-string (cdr entry)) 'phi-autopair-close)))
+               ((eq class string)
+                (add-to-list 'phi-autopair--pairs
+                             `(,char string . ,(char-to-string char)))
+                (define-key phi-autopair-mode-map
+                  (char-to-string char) 'phi-autopair-open)))))
+     (syntax-table))))
 
 ;; + minor-mode
 
