@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;;; phi-autopair.el --- another simple-minded autopair implementation
 
 ;; Copyright (C) 2013-2015 zk_phi
