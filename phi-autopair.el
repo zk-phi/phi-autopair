@@ -48,8 +48,6 @@
 
 ;;; Code:
 
-(require 'paredit)
-
 (defconst phi-autopair-version "1.1.0")
 
 ;; + customs
@@ -272,6 +270,7 @@ string is started."
 
 (defun phi-autopair--delete-backward (&optional strict)
   "FOR INTERNAL USE. delete maybe one character backward."
+  (require 'paredit)
   (let* ((syntax (phi-autopair--syntax-info))
          (in-string (car syntax))
          (last-char (char-before))
@@ -325,6 +324,7 @@ string is started."
 
 (defun phi-autopair--delete-forward (&optional strict)
   "FOR INTERNAL USE. delete maybe one character forward."
+  (require 'paredit)
   (let* ((syntax (phi-autopair--syntax-info))
          (in-string (car syntax))
          (next-char (char-after))
